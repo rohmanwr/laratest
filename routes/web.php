@@ -5,6 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -12,11 +14,11 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'active', 'verified'])
+    ->middleware(['auth', EnsureUserIsActive::class, 'verified'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'active'])->group(function () {
-    Route::prefix('users')->name('users.')->middleware('admin')->group(function () {
+Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
+    Route::prefix('users')->name('users.')->middleware(EnsureUserIsAdmin::class)->group(function () {
         Route::get('/', [UserManagementController::class, 'index'])->name('index');
         Route::get('/create', [UserManagementController::class, 'create'])->name('create');
         Route::post('/', [UserManagementController::class, 'store'])->name('store');
