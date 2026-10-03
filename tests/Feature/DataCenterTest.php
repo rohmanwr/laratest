@@ -48,7 +48,8 @@ class DataCenterTest extends TestCase
             ->assertSee('Ide penting')
             ->assertDontSee('private.jpg')
             ->assertDontSee('Rahasia')
-            ->assertSee('Tambah pengguna');
+            ->assertSee('Unggah gambar')
+            ->assertDontSee('Manajemen pengguna');
     }
 
     public function test_user_can_upload_multiple_images_with_a_caption(): void

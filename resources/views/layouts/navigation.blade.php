@@ -11,7 +11,9 @@
                 <div class="hidden items-center gap-1 sm:flex">
                     <a href="{{ route('dashboard') }}#images" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-950">Arsip gambar</a>
                     <a href="{{ route('dashboard') }}#notes" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-950">Catatan</a>
-                    <a href="{{ route('users.create') }}" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-950">Tambah pengguna</a>
+                    @if (Auth::user()->isAdmin())
+                        <a href="{{ route('users.index') }}" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 hover:text-slate-950">Manajemen pengguna</a>
+                    @endif
                 </div>
             </div>
 
@@ -46,7 +48,9 @@
         <div class="space-y-1">
             <a href="{{ route('dashboard') }}#images" class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-100">Arsip gambar</a>
             <a href="{{ route('dashboard') }}#notes" class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-100">Catatan</a>
-            <a href="{{ route('users.create') }}" class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-100">Tambah pengguna</a>
+            @if (Auth::user()->isAdmin())
+                <a href="{{ route('users.index') }}" class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-100">Manajemen pengguna</a>
+            @endif
             <a href="{{ route('profile.edit') }}" class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-slate-100">Profil</a>
         </div>
         <div class="mt-3 border-t border-slate-200 pt-3">

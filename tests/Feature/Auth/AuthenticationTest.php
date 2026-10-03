@@ -22,7 +22,7 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'password',
         ]);
 
@@ -35,8 +35,32 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'wrong-password',
+        ]);
+
+        $this->assertGuest();
+    }
+
+    public function test_users_can_authenticate_with_a_case_insensitive_username(): void
+    {
+        $user = User::factory()->create(['username' => 'sample_user']);
+
+        $this->post('/login', [
+            'username' => 'SAMPLE_USER',
+            'password' => 'password',
+        ])->assertRedirect(route('dashboard', absolute: false));
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_users_cannot_authenticate_using_their_email_address(): void
+    {
+        $user = User::factory()->create();
+
+        $this->post('/login', [
+            'username' => $user->email,
+            'password' => 'password',
         ]);
 
         $this->assertGuest();

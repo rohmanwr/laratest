@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <p class="text-sm font-medium text-emerald-600">Pengelolaan akun</p>
-            <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900">Tambah pengguna</h1>
+            <p class="text-sm font-medium text-emerald-600">Manajemen pengguna</p>
+            <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900">Tambah pengguna baru</h1>
             <p class="mt-1 text-sm text-gray-500">Buat akun baru untuk menggunakan ruang penyimpanan dan catatan.</p>
         </div>
     </x-slot>
@@ -20,7 +20,7 @@
 
                 <div class="border-b border-slate-100 px-6 py-5 sm:px-8">
                     <h2 class="text-lg font-bold text-slate-900">Informasi pengguna</h2>
-                    <p class="mt-1 text-sm text-slate-500">Isi nama, email, dan password untuk akun baru.</p>
+                    <p class="mt-1 text-sm text-slate-500">Isi nama, username, email, dan password untuk akun baru.</p>
                 </div>
 
                 <div class="space-y-5 px-6 py-6 sm:px-8">
@@ -36,6 +36,14 @@
                     @endif
 
                     <div>
+                        <label for="username" class="mb-1.5 block text-sm font-medium text-slate-700">Username <span class="text-rose-500">*</span></label>
+                        <input id="username" type="text" name="username" value="{{ old('username') }}" required minlength="3" maxlength="30" autocomplete="username" autocapitalize="none" spellcheck="false"
+                            class="w-full rounded-xl border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                        <p class="mt-1 text-xs text-slate-600">3–30 karakter; huruf, angka, tanda hubung, atau garis bawah.</p>
+                        @error('username')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
                         <label for="name" class="mb-1.5 block text-sm font-medium text-slate-700">Nama lengkap <span class="text-rose-500">*</span></label>
                         <input id="name" type="text" name="name" value="{{ old('name') }}" required maxlength="255" autocomplete="name" autofocus
                             class="w-full rounded-xl border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500">
@@ -47,6 +55,15 @@
                         <input id="email" type="email" name="email" value="{{ old('email') }}" required maxlength="255" autocomplete="email"
                             class="w-full rounded-xl border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500">
                         @error('email')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label for="role" class="mb-1.5 block text-sm font-medium text-slate-700">Hak akses <span class="text-rose-500">*</span></label>
+                        <select id="role" name="role" required class="w-full rounded-xl border-slate-200 text-sm focus:border-emerald-500 focus:ring-emerald-500">
+                            <option value="user" @selected(old('role', 'user') === 'user')>User — menggunakan ruang data</option>
+                            <option value="admin" @selected(old('role') === 'admin')>Admin — mengelola pengguna</option>
+                        </select>
+                        @error('role')<p class="mt-1 text-xs text-rose-600">{{ $message }}</p>@enderror
                     </div>
 
                     <div class="grid gap-5 sm:grid-cols-2">
@@ -66,7 +83,7 @@
                 </div>
 
                 <div class="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:flex-row sm:justify-end sm:px-8">
-                    <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Kembali ke dashboard</a>
+                    <a href="{{ route('users.index') }}" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Kembali ke daftar pengguna</a>
                     <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                         Simpan pengguna
                     </button>

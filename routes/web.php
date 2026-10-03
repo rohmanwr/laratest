@@ -16,8 +16,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/users/create', [UserManagementController::class, 'create'])->name('users.create');
-    Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
+    Route::prefix('users')->name('users.')->middleware('admin')->group(function () {
+        Route::get('/', [UserManagementController::class, 'index'])->name('index');
+        Route::get('/create', [UserManagementController::class, 'create'])->name('create');
+        Route::post('/', [UserManagementController::class, 'store'])->name('store');
+        Route::patch('/{user}/role', [UserManagementController::class, 'updateRole'])->name('role.update');
+        Route::get('/{user}/password/reset', [UserManagementController::class, 'editPassword'])->name('password.edit');
+        Route::put('/{user}/password/reset', [UserManagementController::class, 'updatePassword'])->name('password.update');
+    });
     Route::get('/images/create', [ArchivedImageController::class, 'create'])->name('images.create');
     Route::post('/images', [ArchivedImageController::class, 'store'])->name('images.store');
     Route::get('/images/{archivedImage}/file', [ArchivedImageController::class, 'file'])->name('images.file');
