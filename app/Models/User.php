@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -34,6 +35,17 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected static function booted(): void
+    {
+        static::deleting(function (User $user): void {
+            $paths = $user->archivedImages()->pluck('path')->all();
+
+            if ($paths !== []) {
+                Storage::disk('archive')->delete($paths);
+            }
+        });
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -47,8 +59,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function products(): HasMany
+    public function archivedImages(): HasMany
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(ArchivedImage::class);
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class);
     }
 }

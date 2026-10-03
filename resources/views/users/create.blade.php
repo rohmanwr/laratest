@@ -3,7 +3,7 @@
         <div>
             <p class="text-sm font-medium text-emerald-600">Pengelolaan akun</p>
             <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900">Tambah pengguna</h1>
-            <p class="mt-1 text-sm text-gray-500">Buat akun baru untuk mengakses dashboard marketplace.</p>
+            <p class="mt-1 text-sm text-gray-500">Buat akun baru untuk menggunakan ruang penyimpanan dan catatan.</p>
         </div>
     </x-slot>
 

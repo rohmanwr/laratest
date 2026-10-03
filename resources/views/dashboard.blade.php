@@ -1,225 +1,203 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <p class="text-sm font-medium text-emerald-600">Seller center · Katalog produk</p>
-                <h1 class="mt-1 text-2xl font-bold tracking-tight text-gray-900">Manajemen produk</h1>
-                <p class="mt-1 text-sm text-gray-500">Tambah, edit, dan pantau barang marketplace dalam satu halaman.</p>
+                <p class="text-sm font-semibold text-emerald-700">RUANG DATA PRIBADI</p>
+                <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">Pusat data</h1>
+                <p class="mt-1 text-sm text-slate-600">Simpan gambar dan catatan penting dalam satu tempat yang rapi.</p>
             </div>
-            <a href="{{ route('products.create') }}"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14" />
-                </svg>
-                Tambah produk
-            </a>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('users.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m16 0v-2a4 4 0 0 0-3-3.87M14 3.13a4 4 0 0 1 0 7.75M14 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" /></svg>
+                    Tambah pengguna
+                </a>
+                <a href="{{ route('images.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16V4m0 0L7 9m5-5 5 5M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5" /></svg>
+                    Unggah gambar
+                </a>
+            </div>
         </div>
     </x-slot>
 
-    <div class="min-h-screen bg-slate-50 py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:px-8">
-
+    <div class="min-h-screen bg-slate-50">
+        <div class="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
             @if (session('status'))
-                <div class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800" role="status">
-                    <svg class="h-5 w-5 shrink-0 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12 4 4L19 6" />
-                    </svg>
+                <div class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900" role="status">
+                    <svg class="h-5 w-5 shrink-0 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 12 4 4L19 6" /></svg>
                     {{ session('status') }}
                 </div>
             @endif
 
-            <section aria-label="Ringkasan produk" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Total produk</p>
-                            <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900">{{ number_format($totalProducts, 0, ',', '.') }}</p>
-                        </div>
-                        <span class="rounded-xl bg-blue-50 p-3 text-blue-600">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5" />
-                            </svg>
-                        </span>
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500">Semua barang di katalogmu</p>
+            @if ($errors->any())
+                <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900" role="alert">
+                    <p class="font-semibold">Ada data yang perlu diperiksa.</p>
+                    <ul class="mt-1 list-inside list-disc">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
+            @endif
 
+            <section aria-label="Ringkasan penyimpanan" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Produk aktif</p>
-                            <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900">{{ number_format($activeProducts, 0, ',', '.') }}</p>
-                        </div>
-                        <span class="rounded-xl bg-emerald-50 p-3 text-emerald-600">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                        </span>
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500">Siap ditampilkan di marketplace</p>
+                    <p class="text-sm font-medium text-slate-600">Total gambar</p>
+                    <p class="mt-3 text-3xl font-bold tracking-tight text-slate-950">{{ number_format($totalImages, 0, ',', '.') }}</p>
+                    <p class="mt-1 text-sm text-slate-500">File tersimpan di arsip</p>
                 </div>
-
                 <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Stok menipis</p>
-                            <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900">{{ number_format($lowStockProducts, 0, ',', '.') }}</p>
-                        </div>
-                        <span class="rounded-xl bg-amber-50 p-3 text-amber-600">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 9v4m0 4h.01M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.7 3.86a2 2 0 0 0-3.4 0Z" />
-                            </svg>
-                        </span>
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500">Produk dengan stok 5 atau kurang</p>
+                    <p class="text-sm font-medium text-slate-600">Ruang terpakai</p>
+                    <p class="mt-3 text-3xl font-bold tracking-tight text-slate-950">
+                        @if ($totalImageBytes >= 1073741824)
+                            {{ number_format($totalImageBytes / 1073741824, 1, ',', '.') }} GB
+                        @elseif ($totalImageBytes >= 1048576)
+                            {{ number_format($totalImageBytes / 1048576, 1, ',', '.') }} MB
+                        @elseif ($totalImageBytes >= 1024)
+                            {{ number_format($totalImageBytes / 1024, 0, ',', '.') }} KB
+                        @else
+                            {{ number_format($totalImageBytes, 0, ',', '.') }} B
+                        @endif
+                    </p>
+                    <p class="mt-1 text-sm text-slate-500">Ukuran semua gambar tersimpan</p>
                 </div>
-
                 <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Nilai persediaan</p>
-                            <p class="mt-3 text-2xl font-bold tracking-tight text-slate-900">Rp{{ number_format((float) $inventoryValue, 0, ',', '.') }}</p>
-                        </div>
-                        <span class="rounded-xl bg-violet-50 p-3 text-violet-600">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6v12m4-9.5c0-1.38-1.79-2.5-4-2.5s-4 1.12-4 2.5 1.79 2.5 4 2.5 4 1.12 4 2.5-1.79 2.5-4 2.5-4-1.12-4-2.5" />
-                            </svg>
-                        </span>
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500">Perkiraan harga dikali jumlah stok</p>
+                    <p class="text-sm font-medium text-slate-600">Diunggah bulan ini</p>
+                    <p class="mt-3 text-3xl font-bold tracking-tight text-slate-950">{{ number_format($recentImages, 0, ',', '.') }}</p>
+                    <p class="mt-1 text-sm text-slate-500">Gambar baru bulan ini</p>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <p class="text-sm font-medium text-slate-600">Catatan</p>
+                    <p class="mt-3 text-3xl font-bold tracking-tight text-slate-950">{{ number_format($totalNotes, 0, ',', '.') }}</p>
+                    <p class="mt-1 text-sm text-slate-500">Catatan yang kamu simpan</p>
                 </div>
             </section>
 
-            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                <div class="border-b border-slate-100 p-5 sm:p-6">
-                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900">Index produk</h2>
-                            <p class="mt-1 text-sm text-slate-500">Data produk dan aksi CRUD tersedia langsung di halaman ini.</p>
-                        </div>
-                        <form method="GET" action="{{ route('dashboard') }}" class="grid gap-2 sm:grid-cols-3">
-                            <label class="sr-only" for="search-products">Cari produk atau SKU</label>
-                            <div class="relative sm:col-span-1">
-                                <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                                    <circle cx="11" cy="11" r="7" stroke-width="2" />
-                                    <path stroke-linecap="round" stroke-width="2" d="m20 20-4-4" />
-                                </svg>
-                                <input id="search-products" type="search" name="q" value="{{ request('q') }}" placeholder="Cari nama atau SKU"
-                                    class="w-full rounded-xl border-slate-200 py-2.5 pl-9 pr-3 text-sm placeholder:text-slate-400 focus:border-emerald-500 focus:ring-emerald-500">
-                            </div>
-                            <label class="sr-only" for="filter-category">Filter kategori</label>
-                            <select id="filter-category" name="category" class="rounded-xl border-slate-200 py-2.5 text-sm text-slate-600 focus:border-emerald-500 focus:ring-emerald-500">
-                                <option value="">Semua kategori</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category }}" @selected(request('category') === $category)>{{ $category }}</option>
-                                @endforeach
-                            </select>
-                            <div class="flex gap-2">
-                                <label class="sr-only" for="filter-status">Filter status</label>
-                                <select id="filter-status" name="status" class="min-w-0 flex-1 rounded-xl border-slate-200 py-2.5 text-sm text-slate-600 focus:border-emerald-500 focus:ring-emerald-500">
-                                    <option value="">Semua status</option>
-                                    <option value="active" @selected(request('status') === 'active')>Aktif</option>
-                                    <option value="draft" @selected(request('status') === 'draft')>Draft</option>
-                                </select>
-                                <button type="submit" class="rounded-xl border border-slate-200 px-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Cari</button>
-                            </div>
-                        </form>
+            <section id="images" class="scroll-mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div class="flex flex-col gap-4 border-b border-slate-200 px-5 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-950">Arsip gambar</h2>
+                        <p class="mt-1 text-sm text-slate-600">Gambar hanya dapat dilihat oleh akun yang mengunggahnya.</p>
                     </div>
+                    <form method="GET" action="{{ route('dashboard') }}" class="flex w-full gap-2 lg:max-w-md">
+                        <label for="image-search" class="sr-only">Cari nama file atau keterangan gambar</label>
+                        <input id="image-search" type="search" name="q" value="{{ request('q') }}" placeholder="Cari nama file atau keterangan"
+                            class="min-w-0 flex-1 rounded-xl border-slate-300 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-700 focus:ring-emerald-700">
+                        <button type="submit" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-700">Cari</button>
+                    </form>
                 </div>
 
-                @if ($products->isEmpty())
+                @if ($images->isEmpty())
                     <div class="px-6 py-16 text-center">
-                        <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-                            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5" />
-                            </svg>
+                        <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-800">
+                            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5Zm0 12 5-5 4 4 3-3 4 4M9 8h.01" /></svg>
                         </span>
-                        <h3 class="mt-4 text-base font-semibold text-slate-900">{{ request()->hasAny(['q', 'category', 'status']) ? 'Produk tidak ditemukan' : 'Belum ada produk' }}</h3>
-                        <p class="mx-auto mt-1 max-w-sm text-sm text-slate-500">
-                            {{ request()->hasAny(['q', 'category', 'status']) ? 'Coba ubah kata kunci atau filter pencarianmu.' : 'Mulai isi katalog marketplace-mu dengan menambahkan produk pertama.' }}
-                        </p>
-                        @if (request()->hasAny(['q', 'category', 'status']))
-                            <a href="{{ route('products.index') }}" class="mt-5 inline-flex rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Reset pencarian</a>
+                        <h3 class="mt-4 text-base font-semibold text-slate-950">{{ request()->filled('q') ? 'Gambar tidak ditemukan' : 'Arsip gambar masih kosong' }}</h3>
+                        <p class="mx-auto mt-1 max-w-md text-sm text-slate-600">{{ request()->filled('q') ? 'Coba kata kunci lain atau hapus pencarian.' : 'Unggah beberapa gambar sekaligus untuk mulai membangun arsip pribadimu.' }}</p>
+                        @if (request()->filled('q'))
+                            <a href="{{ route('dashboard') }}#images" class="mt-5 inline-flex rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Hapus pencarian</a>
                         @else
-                            <a href="{{ route('products.create') }}" class="mt-5 inline-flex rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">Tambah produk pertama</a>
+                            <a href="{{ route('images.create') }}" class="mt-5 inline-flex rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800">Unggah gambar pertama</a>
                         @endif
                     </div>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-[760px] text-left">
-                            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3.5">Produk</th>
-                                    <th scope="col" class="px-4 py-3.5">Marketplace</th>
-                                    <th scope="col" class="px-4 py-3.5">Kategori</th>
-                                    <th scope="col" class="px-4 py-3.5">Harga</th>
-                                    <th scope="col" class="px-4 py-3.5">Stok</th>
-                                    <th scope="col" class="px-4 py-3.5">Status</th>
-                                    <th scope="col" class="px-6 py-3.5 text-right">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                @foreach ($products as $product)
-                                    <tr class="transition hover:bg-slate-50/70">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-                                                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-sm font-bold text-emerald-700">
-                                                    {{ mb_strtoupper(mb_substr($product->name, 0, 1)) }}
-                                                </span>
-                                                <div class="min-w-0">
-                                                    <p class="truncate font-semibold text-slate-900">{{ $product->name }}</p>
-                                                    <p class="mt-0.5 text-xs text-slate-500">Kode: {{ $product->sku ?: '-' }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-4 text-sm text-slate-600">{{ $product->marketplace ?: '-' }}</td>
-                                        <td class="px-4 py-4 text-sm text-slate-600">{{ $product->category }}</td>
-                                        <td class="px-4 py-4 text-sm font-semibold text-slate-800">Rp{{ number_format((float) $product->price, 0, ',', '.') }}</td>
-                                        <td class="px-4 py-4">
-                                            <span class="text-sm font-medium {{ $product->stock <= 5 ? 'text-amber-700' : 'text-slate-700' }}">{{ number_format($product->stock, 0, ',', '.') }} unit</span>
-                                            @if ($product->stock <= 5)
-                                                <span class="ml-1 text-xs text-amber-600">Menipis</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            @if ($product->status === 'active')
-                                                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Aktif
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
-                                                    <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>Draft
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex justify-end gap-2">
-                                                <a href="{{ route('products.edit', $product) }}"
-                                                    class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700">
-                                                    Edit
-                                                </a>
-                                                <form method="POST" action="{{ route('products.destroy', $product) }}" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:border-rose-200 hover:bg-rose-50">
-                                                        Hapus
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="grid gap-4 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3 xl:grid-cols-4">
+                        @foreach ($images as $image)
+                            <article class="group overflow-hidden rounded-xl border border-slate-200 bg-white">
+                                <a href="{{ route('images.file', $image) }}" target="_blank" rel="noopener" aria-label="Buka gambar {{ $image->original_name }}" class="block aspect-[4/3] overflow-hidden bg-slate-100">
+                                    <img src="{{ route('images.file', $image) }}" alt="{{ $image->caption ?: $image->original_name }}" loading="lazy" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]">
+                                </a>
+                                <div class="p-3.5">
+                                    <p class="truncate text-sm font-semibold text-slate-900" title="{{ $image->original_name }}">{{ $image->original_name }}</p>
+                                    @if ($image->caption)
+                                        <p class="mt-1 line-clamp-2 text-sm text-slate-600">{{ $image->caption }}</p>
+                                    @endif
+                                    <div class="mt-3 flex items-center justify-between gap-2">
+                                        <span class="text-xs text-slate-500">{{ $image->created_at->format('d M Y') }} · {{ number_format($image->size / 1048576, 1, ',', '.') }} MB</span>
+                                        <form method="POST" action="{{ route('images.destroy', $image) }}" onsubmit="return confirm('Hapus gambar ini dari arsip?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-600">Hapus</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
                     </div>
-                    @if ($products->hasPages())
-                        <div class="border-t border-slate-100 px-5 py-4 sm:px-6">
-                            {{ $products->links() }}
-                        </div>
+                    @if ($images->hasPages())
+                        <div class="border-t border-slate-200 px-5 py-4 sm:px-6">{{ $images->links() }}</div>
                     @endif
                 @endif
             </section>
-        </div>
 
+            <section id="notes" class="scroll-mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.8fr)]">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-5">
+                        <h2 class="text-lg font-bold text-slate-950">{{ $editingNote ? 'Edit catatan' : 'Catatan baru' }}</h2>
+                        <p class="mt-1 text-sm text-slate-600">Simpan ide, pengingat, atau informasi penting.</p>
+                    </div>
+                    <form method="POST" action="{{ $editingNote ? route('notes.update', $editingNote) : route('notes.store') }}" class="space-y-4">
+                        @csrf
+                        @if ($editingNote)
+                            @method('PUT')
+                        @endif
+                        <div>
+                            <label for="note-title" class="mb-1.5 block text-sm font-semibold text-slate-800">Judul</label>
+                            <input id="note-title" name="title" type="text" required maxlength="120" value="{{ old('title', $editingNote?->title) }}" placeholder="Contoh: Ide untuk minggu depan"
+                                class="w-full rounded-xl border-slate-300 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-700 focus:ring-emerald-700">
+                            @error('title')<p class="mt-1 text-sm text-rose-700">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <label for="note-body" class="mb-1.5 block text-sm font-semibold text-slate-800">Isi catatan</label>
+                            <textarea id="note-body" name="body" rows="5" required maxlength="5000" placeholder="Tulis catatanmu di sini..."
+                                class="w-full rounded-xl border-slate-300 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-700 focus:ring-emerald-700">{{ old('body', $editingNote?->body) }}</textarea>
+                            @error('body')<p class="mt-1 text-sm text-rose-700">{{ $message }}</p>@enderror
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2">{{ $editingNote ? 'Simpan perubahan' : 'Simpan catatan' }}</button>
+                            @if ($editingNote)
+                                <a href="{{ route('dashboard') }}#notes" class="inline-flex items-center justify-center rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Batal</a>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-4 flex items-end justify-between gap-3">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-950">Catatan tersimpan</h2>
+                            <p class="mt-1 text-sm text-slate-600">Enam catatan terbaru</p>
+                        </div>
+                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{{ $totalNotes }} catatan</span>
+                    </div>
+                    @forelse ($notes as $note)
+                        <article class="border-t border-slate-200 py-4 first:border-t-0 first:pt-0">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <h3 class="break-words text-sm font-semibold text-slate-900">{{ $note->title }}</h3>
+                                    <p class="mt-1 whitespace-pre-line break-words text-sm leading-6 text-slate-700">{{ $note->body }}</p>
+                                    <p class="mt-2 text-xs text-slate-500">Diperbarui {{ $note->updated_at->format('d M Y, H:i') }}</p>
+                                </div>
+                                <div class="flex shrink-0 items-center gap-1">
+                                    <a href="{{ route('dashboard', ['edit_note' => $note->id]) }}#notes" class="rounded-lg px-2 py-1 text-xs font-semibold text-emerald-800 hover:bg-emerald-50">Edit</a>
+                                    <form method="POST" action="{{ route('notes.destroy', $note) }}" onsubmit="return confirm('Hapus catatan ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="rounded-lg px-2 py-1 text-xs font-semibold text-rose-700 hover:bg-rose-50">Hapus</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </article>
+                    @empty
+                        <div class="rounded-xl bg-slate-50 px-4 py-8 text-center">
+                            <p class="text-sm font-semibold text-slate-800">Belum ada catatan</p>
+                            <p class="mt-1 text-sm text-slate-600">Catatan yang kamu simpan akan muncul di sini.</p>
+                        </div>
+                    @endforelse
+                    @if ($totalNotes > 6)
+                        <p class="border-t border-slate-200 pt-3 text-xs text-slate-500">Menampilkan 6 catatan terbaru.</p>
+                    @endif
+                </div>
+            </section>
+        </div>
     </div>
 </x-app-layout>
