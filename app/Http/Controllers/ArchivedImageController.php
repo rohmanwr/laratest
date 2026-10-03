@@ -14,11 +14,12 @@ class ArchivedImageController extends Controller
 {
     public function create(): View
     {
-        return view('images.create');
+        return view('images.create', $this->uploadLimits());
     }
 
     public function store(Request $request): RedirectResponse
     {
+        $limits = $this->uploadLimits();
         $files = array_values(array_merge(
             (array) $request->file('images', []),
             (array) $request->file('folder_images', []),
@@ -29,15 +30,25 @@ class ArchivedImageController extends Controller
 
         $validator = Validator::make($data, [
             'images' => ['required', 'array', 'min:1', 'max:20'],
-            'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
+            'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:'.(int) ceil($limits['maxFileBytes'] / 1024)],
             'caption' => ['nullable', 'string', 'max:250'],
         ], [
             'images.required' => 'Pilih setidaknya satu gambar untuk diunggah.',
             'images.max' => 'Maksimal 20 gambar dalam satu kali unggah, termasuk gambar dari folder.',
             'images.*.image' => 'File yang dipilih harus berupa gambar.',
             'images.*.mimes' => 'Format gambar yang didukung: JPG, PNG, GIF, dan WebP.',
-            'images.*.max' => 'Ukuran setiap gambar maksimal 10 MB.',
+            'images.*.max' => 'Salah satu gambar melebihi batas ukuran file yang didukung server.',
         ]);
+        $validator->after(function ($validator) use ($files, $limits): void {
+            $totalBytes = array_sum(array_map(fn ($file) => $file->getSize(), $files));
+
+            if ($totalBytes > $limits['maxTotalBytes']) {
+                $validator->errors()->add(
+                    'images',
+                    'Total ukuran gambar melebihi batas unggah server. Kurangi jumlah gambar atau unggah dalam beberapa kali.'
+                );
+            }
+        });
         $validated = $validator->validate();
 
         foreach ($validated['images'] as $file) {
@@ -58,6 +69,40 @@ class ArchivedImageController extends Controller
             : "{$count} gambar berhasil disimpan.";
 
         return redirect()->route('dashboard')->with('status', $message);
+    }
+
+    private function uploadLimits(): array
+    {
+        $maxFileBytes = min(10 * 1024 * 1024, $this->iniSizeInBytes(ini_get('upload_max_filesize')) ?: 10 * 1024 * 1024);
+        $maxTotalBytes = 20 * 10 * 1024 * 1024;
+        $postMaxBytes = $this->iniSizeInBytes(ini_get('post_max_size'));
+
+        if ($postMaxBytes > 0) {
+            $maxTotalBytes = min($maxTotalBytes, max(1, $postMaxBytes - 1024 * 1024));
+        }
+
+        return [
+            'maxFileBytes' => $maxFileBytes,
+            'maxTotalBytes' => $maxTotalBytes,
+        ];
+    }
+
+    private function iniSizeInBytes(string|false $value): int
+    {
+        if (! $value || trim($value) === '') {
+            return 0;
+        }
+
+        $value = trim($value);
+        $unit = strtolower(substr($value, -1));
+        $size = (int) $value;
+
+        return match ($unit) {
+            'g' => $size * 1024 * 1024 * 1024,
+            'm' => $size * 1024 * 1024,
+            'k' => $size * 1024,
+            default => $size,
+        };
     }
 
     public function file(Request $request, ArchivedImage $archivedImage): StreamedResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
