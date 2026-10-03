@@ -107,6 +107,18 @@ class DataCenterTest extends TestCase
         }
     }
 
+    public function test_image_upload_form_displays_500_mb_limits_for_files_and_total_upload(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('images.create'))
+            ->assertOk()
+            ->assertSee('data-max-file-bytes="524288000"', false)
+            ->assertSee('data-max-total-bytes="524288000"', false)
+            ->assertSee('maksimal 500 MB per file dan 500 MB total');
+    }
+
     public function test_image_upload_rejects_invalid_files_and_too_many_files(): void
     {
         Storage::fake('archive');

@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ArchivedImageController extends Controller
 {
+    private const MAX_UPLOAD_BYTES = 500 * 1024 * 1024;
+
     public function create(): View
     {
         return view('images.create', $this->uploadLimits());
@@ -73,12 +75,12 @@ class ArchivedImageController extends Controller
 
     private function uploadLimits(): array
     {
-        $maxFileBytes = min(10 * 1024 * 1024, $this->iniSizeInBytes(ini_get('upload_max_filesize')) ?: 10 * 1024 * 1024);
-        $maxTotalBytes = 20 * 10 * 1024 * 1024;
+        $maxFileBytes = min(self::MAX_UPLOAD_BYTES, $this->iniSizeInBytes(ini_get('upload_max_filesize')) ?: self::MAX_UPLOAD_BYTES);
+        $maxTotalBytes = self::MAX_UPLOAD_BYTES;
         $postMaxBytes = $this->iniSizeInBytes(ini_get('post_max_size'));
 
         if ($postMaxBytes > 0) {
-            $maxTotalBytes = min($maxTotalBytes, max(1, $postMaxBytes - 1024 * 1024));
+            $maxTotalBytes = min($maxTotalBytes, max(1, $postMaxBytes - 20 * 1024 * 1024));
         }
 
         return [
