@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class UserManagementTest extends TestCase
@@ -21,12 +22,16 @@ class UserManagementTest extends TestCase
     public function test_admin_can_open_user_management_and_create_user_pages(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
+        User::factory()->create(['role' => 'user']);
 
         $this->actingAs($admin)
             ->get(route('users.index'))
             ->assertOk()
             ->assertSee('Manajemen pengguna')
-            ->assertSee('Tambah user baru');
+            ->assertSee('Tambah user baru')
+            ->assertSee('Reset password')
+            ->assertSee('Nonaktifkan')
+            ->assertSee('Delete');
 
         $this->actingAs($admin)
             ->get(route('users.create'))
@@ -134,6 +139,80 @@ class UserManagementTest extends TestCase
             ->assertRedirect(route('users.index'));
 
         $this->assertTrue(Hash::check('new-password-123', $user->fresh()->password));
+    }
+
+    public function test_admin_can_deactivate_and_reactivate_a_user(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'user']);
+
+        $this->actingAs($admin)
+            ->patch(route('users.status.update', $user), ['is_active' => '0'])
+            ->assertRedirect(route('users.index'));
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'is_active' => false]);
+
+        $this->post('/logout');
+        $this->post('/login', [
+            'username' => $user->username,
+            'password' => 'password',
+        ])->assertSessionHasErrors('username');
+
+        $this->actingAs($admin);
+        $this->patch(route('users.status.update', $user), ['is_active' => '1'])
+            ->assertRedirect(route('users.index'));
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'is_active' => true]);
+    }
+
+    public function test_deactivated_user_with_an_existing_session_is_logged_out(): void
+    {
+        $user = User::factory()->create(['is_active' => false]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertRedirect(route('login'))
+            ->assertSessionHasErrors('username');
+
+        $this->assertGuest();
+    }
+
+    public function test_admin_can_delete_user_and_their_archived_files(): void
+    {
+        Storage::fake('archive');
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'user']);
+        $image = $user->archivedImages()->create([
+            'path' => 'user/photo.jpg',
+            'original_name' => 'photo.jpg',
+            'mime_type' => 'image/jpeg',
+            'size' => 100,
+        ]);
+        $user->notes()->create(['title' => 'Catatan', 'body' => 'Milik pengguna.']);
+        Storage::disk('archive')->put($image->path, 'image bytes');
+
+        $this->actingAs($admin)
+            ->delete(route('users.destroy', $user))
+            ->assertRedirect(route('users.index'));
+
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertDatabaseMissing('archived_images', ['id' => $image->id]);
+        $this->assertDatabaseMissing('notes', ['user_id' => $user->id]);
+        $this->assertFalse(Storage::disk('archive')->exists($image->path));
+    }
+
+    public function test_admin_cannot_deactivate_or_delete_themselves_or_remove_the_last_active_admin(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->patch(route('users.status.update', $admin), ['is_active' => '0'])
+            ->assertRedirect()
+            ->assertSessionHasErrors('account_status');
+
+        $this->delete(route('users.destroy', $admin))
+            ->assertRedirect()
+            ->assertSessionHasErrors('account_status');
+
+        $this->assertDatabaseHas('users', ['id' => $admin->id, 'role' => 'admin', 'is_active' => true]);
     }
 
     public function test_admin_management_command_promotes_existing_user(): void

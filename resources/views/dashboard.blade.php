@@ -44,13 +44,8 @@
             </div>
             @endif
 
-            <section aria-label="Ringkasan penyimpanan" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <p class="text-sm font-medium text-slate-600">Total gambar</p>
-                    <p class="mt-3 text-3xl font-bold tracking-tight text-slate-950">{{ number_format($totalImages, 0, ',', '.') }}</p>
-                    <p class="mt-1 text-sm text-slate-500">File tersimpan di arsip</p>
-                </div>
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <section aria-label="Informasi penyimpanan">
+                <div class="max-w-sm rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                     <p class="text-sm font-medium text-slate-600">Ruang terpakai</p>
                     <p class="mt-3 text-3xl font-bold tracking-tight text-slate-950">
                         @if ($totalImageBytes >= 1073741824)
@@ -64,16 +59,6 @@
                         @endif
                     </p>
                     <p class="mt-1 text-sm text-slate-500">Ukuran semua gambar tersimpan</p>
-                </div>
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <p class="text-sm font-medium text-slate-600">Diunggah bulan ini</p>
-                    <p class="mt-3 text-3xl font-bold tracking-tight text-slate-950">{{ number_format($recentImages, 0, ',', '.') }}</p>
-                    <p class="mt-1 text-sm text-slate-500">Gambar baru bulan ini</p>
-                </div>
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <p class="text-sm font-medium text-slate-600">Catatan</p>
-                    <p class="mt-3 text-3xl font-bold tracking-tight text-slate-950">{{ number_format($totalNotes, 0, ',', '.') }}</p>
-                    <p class="mt-1 text-sm text-slate-500">Catatan yang kamu simpan</p>
                 </div>
             </section>
 
@@ -174,7 +159,6 @@
                             <h2 class="text-lg font-bold text-slate-950">Catatan tersimpan</h2>
                             <p class="mt-1 text-sm text-slate-600">Enam catatan terbaru</p>
                         </div>
-                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{{ $totalNotes }} catatan</span>
                     </div>
                     @forelse ($notes as $note)
                     <article class="border-t border-slate-200 py-4 first:border-t-0 first:pt-0">
@@ -200,9 +184,6 @@
                         <p class="mt-1 text-sm text-slate-600">Catatan yang kamu simpan akan muncul di sini.</p>
                     </div>
                     @endforelse
-                    @if ($totalNotes > 6)
-                    <p class="border-t border-slate-200 pt-3 text-xs text-slate-500">Menampilkan 6 catatan terbaru.</p>
-                    @endif
                 </div>
             </section>
         </div>

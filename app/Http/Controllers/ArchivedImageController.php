@@ -6,6 +6,7 @@ use App\Models\ArchivedImage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -18,17 +19,26 @@ class ArchivedImageController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $files = array_values(array_merge(
+            (array) $request->file('images', []),
+            (array) $request->file('folder_images', []),
+        ));
+
+        $data = $request->all();
+        $data['images'] = $files;
+
+        $validator = Validator::make($data, [
             'images' => ['required', 'array', 'min:1', 'max:20'],
             'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:10240'],
             'caption' => ['nullable', 'string', 'max:250'],
         ], [
             'images.required' => 'Pilih setidaknya satu gambar untuk diunggah.',
-            'images.max' => 'Maksimal 20 gambar dalam satu kali unggah.',
+            'images.max' => 'Maksimal 20 gambar dalam satu kali unggah, termasuk gambar dari folder.',
             'images.*.image' => 'File yang dipilih harus berupa gambar.',
             'images.*.mimes' => 'Format gambar yang didukung: JPG, PNG, GIF, dan WebP.',
             'images.*.max' => 'Ukuran setiap gambar maksimal 10 MB.',
         ]);
+        $validated = $validator->validate();
 
         foreach ($validated['images'] as $file) {
             $path = $file->store((string) $request->user()->id, 'archive');

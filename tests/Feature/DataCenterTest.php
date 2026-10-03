@@ -49,6 +49,8 @@ class DataCenterTest extends TestCase
             ->assertDontSee('private.jpg')
             ->assertDontSee('Rahasia')
             ->assertSee('Unggah gambar')
+            ->assertDontSee('Total gambar')
+            ->assertDontSee('Diunggah bulan ini')
             ->assertDontSee('Manajemen pengguna');
     }
 
@@ -73,6 +75,34 @@ class DataCenterTest extends TestCase
         foreach (ArchivedImage::all() as $image) {
             $this->assertSame($user->id, $image->user_id);
             $this->assertSame('Dokumen penting', $image->caption);
+            $this->assertTrue(Storage::disk('archive')->exists($image->path));
+        }
+    }
+
+    public function test_user_can_upload_images_selected_from_a_folder(): void
+    {
+        Storage::fake('archive');
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('images.store'), [
+                'folder_images' => [
+                    UploadedFile::fake()->image('folder-first.jpg'),
+                    UploadedFile::fake()->image('folder-second.png'),
+                ],
+                'caption' => 'Gambar dari folder',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHas('status', '2 gambar berhasil disimpan.');
+
+        $this->assertDatabaseCount('archived_images', 2);
+        $this->assertDatabaseHas('archived_images', [
+            'user_id' => $user->id,
+            'original_name' => 'folder-first.jpg',
+            'caption' => 'Gambar dari folder',
+        ]);
+        foreach (ArchivedImage::all() as $image) {
             $this->assertTrue(Storage::disk('archive')->exists($image->path));
         }
     }

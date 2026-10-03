@@ -12,15 +12,17 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'active', 'verified'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     Route::prefix('users')->name('users.')->middleware('admin')->group(function () {
         Route::get('/', [UserManagementController::class, 'index'])->name('index');
         Route::get('/create', [UserManagementController::class, 'create'])->name('create');
         Route::post('/', [UserManagementController::class, 'store'])->name('store');
         Route::patch('/{user}/role', [UserManagementController::class, 'updateRole'])->name('role.update');
+        Route::patch('/{user}/status', [UserManagementController::class, 'updateStatus'])->name('status.update');
+        Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
         Route::get('/{user}/password/reset', [UserManagementController::class, 'editPassword'])->name('password.edit');
         Route::put('/{user}/password/reset', [UserManagementController::class, 'updatePassword'])->name('password.update');
     });

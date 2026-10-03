@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ArchivedImage;
-use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -34,10 +32,7 @@ class DashboardController extends Controller
             'images' => $images,
             'notes' => $user->notes()->latest()->limit(6)->get(),
             'editingNote' => $editingNote,
-            'totalImages' => $user->archivedImages()->count(),
             'totalImageBytes' => $user->archivedImages()->sum('size'),
-            'totalNotes' => $user->notes()->count(),
-            'recentImages' => $user->archivedImages()->where('created_at', '>=', now()->startOfMonth())->count(),
         ]);
     }
 }

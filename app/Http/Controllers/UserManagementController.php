@@ -98,4 +98,50 @@ class UserManagementController extends Controller
 
         return redirect()->route('users.index')->with('status', "Password {$user->username} berhasil direset.");
     }
+
+    public function updateStatus(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'is_active' => ['required', 'boolean'],
+        ]);
+        $isActive = (bool) $validated['is_active'];
+
+        if ($user->is($request->user()) && ! $isActive) {
+            return back()->withErrors([
+                'account_status' => 'Kamu tidak dapat menonaktifkan akun yang sedang digunakan.',
+            ]);
+        }
+
+        if ($user->isAdmin() && ! $isActive && User::where('role', 'admin')->where('is_active', true)->count() <= 1) {
+            return back()->withErrors([
+                'account_status' => 'Admin aktif terakhir tidak dapat dinonaktifkan.',
+            ]);
+        }
+
+        $user->update(['is_active' => $isActive]);
+
+        $status = $isActive ? 'diaktifkan kembali' : 'dinonaktifkan';
+
+        return redirect()->route('users.index')->with('status', "Akun {$user->username} berhasil {$status}.");
+    }
+
+    public function destroy(Request $request, User $user): RedirectResponse
+    {
+        if ($user->is($request->user())) {
+            return back()->withErrors([
+                'account_status' => 'Kamu tidak dapat menghapus akun yang sedang digunakan.',
+            ]);
+        }
+
+        if ($user->isAdmin() && $user->is_active && User::where('role', 'admin')->where('is_active', true)->count() <= 1) {
+            return back()->withErrors([
+                'account_status' => 'Admin aktif terakhir tidak dapat dihapus.',
+            ]);
+        }
+
+        $username = $user->username;
+        $user->delete();
+
+        return redirect()->route('users.index')->with('status', "Pengguna {$username} berhasil dihapus.");
+    }
 }

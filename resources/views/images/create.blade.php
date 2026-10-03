@@ -3,7 +3,7 @@
         <div>
             <p class="text-sm font-semibold text-emerald-700">ARSIP GAMBAR</p>
             <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-950">Unggah gambar</h1>
-            <p class="mt-1 text-sm text-slate-600">Pilih satu atau beberapa gambar untuk disimpan secara pribadi.</p>
+            <p class="mt-1 text-sm text-slate-600">Unggah gambar satuan, beberapa file, atau seluruh gambar dalam satu folder.</p>
         </div>
     </x-slot>
 
@@ -23,14 +23,22 @@
             <form method="POST" action="{{ route('images.store') }}" enctype="multipart/form-data" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 @csrf
                 <div class="space-y-6 p-5 sm:p-8">
-                    <div>
-                        <label for="images" class="mb-2 block text-sm font-semibold text-slate-800">Pilih gambar <span class="text-rose-700">*</span></label>
-                        <input id="images" type="file" name="images[]" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp" multiple required
-                            class="block w-full cursor-pointer rounded-xl border border-slate-300 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-emerald-50 file:px-4 file:py-3 file:text-sm file:font-semibold file:text-emerald-900 hover:file:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-700">
-                        <p class="mt-2 text-sm leading-6 text-slate-600">Pilih sampai 20 file sekali unggah. Format JPG, PNG, GIF, atau WebP; ukuran maksimal 10 MB per file.</p>
-                        @error('images')<p class="mt-1 text-sm text-rose-700">{{ $message }}</p>@enderror
-                        @error('images.*')<p class="mt-1 text-sm text-rose-700">{{ $message }}</p>@enderror
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <div>
+                            <label for="images" class="mb-2 block text-sm font-semibold text-slate-800">Pilih file gambar</label>
+                            <input id="images" type="file" name="images[]" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp" multiple
+                                class="block w-full cursor-pointer rounded-xl border border-slate-300 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-emerald-50 file:px-4 file:py-3 file:text-sm file:font-semibold file:text-emerald-900 hover:file:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-700">
+                            <p class="mt-2 text-sm leading-6 text-slate-600">Pilih satu atau beberapa gambar.</p>
+                        </div>
+                        <div>
+                            <label for="folder_images" class="mb-2 block text-sm font-semibold text-slate-800">Pilih folder gambar</label>
+                            <input id="folder_images" type="file" name="folder_images[]" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp" webkitdirectory directory multiple
+                                class="block w-full cursor-pointer rounded-xl border border-slate-300 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-emerald-50 file:px-4 file:py-3 file:text-sm file:font-semibold file:text-emerald-900 hover:file:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-700">
+                            <p class="mt-2 text-sm leading-6 text-slate-600">Pilih folder; browser akan mengunggah gambar yang ada di dalamnya.</p>
+                        </div>
+                        <p class="text-sm leading-6 text-slate-600 sm:col-span-2">Maksimal 20 gambar dalam satu kali unggah, termasuk dari folder. Format JPG, PNG, GIF, atau WebP; ukuran maksimal 10 MB per gambar. Pastikan folder hanya berisi gambar dengan format tersebut.</p>
                     </div>
+                    @error('images')<p class="mt-1 text-sm text-rose-700">{{ $message }}</p>@enderror
                     <div>
                         <label for="caption" class="mb-2 block text-sm font-semibold text-slate-800">Keterangan <span class="font-normal text-slate-500">(opsional)</span></label>
                         <input id="caption" name="caption" type="text" maxlength="250" value="{{ old('caption') }}" placeholder="Keterangan yang digunakan untuk semua gambar terpilih"
