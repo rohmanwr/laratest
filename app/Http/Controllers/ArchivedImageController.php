@@ -13,15 +13,18 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ArchivedImageController extends Controller
 {
     private const MAX_UPLOAD_BYTES = 500 * 1024 * 1024;
+    private const MAX_UPLOAD_KILOBYTES = 500 * 1024;
 
     public function create(): View
     {
-        return view('images.create', $this->uploadLimits());
+        return view('images.create', [
+            'maxFileBytes' => self::MAX_UPLOAD_BYTES,
+            'maxTotalBytes' => self::MAX_UPLOAD_BYTES,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $limits = $this->uploadLimits();
         $files = array_values(array_merge(
             (array) $request->file('images', []),
             (array) $request->file('folder_images', []),
@@ -32,22 +35,22 @@ class ArchivedImageController extends Controller
 
         $validator = Validator::make($data, [
             'images' => ['required', 'array', 'min:1', 'max:20'],
-            'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:'.(int) ceil($limits['maxFileBytes'] / 1024)],
+            'images.*' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:'.self::MAX_UPLOAD_KILOBYTES],
             'caption' => ['nullable', 'string', 'max:250'],
         ], [
             'images.required' => 'Pilih setidaknya satu gambar untuk diunggah.',
             'images.max' => 'Maksimal 20 gambar dalam satu kali unggah, termasuk gambar dari folder.',
             'images.*.image' => 'File yang dipilih harus berupa gambar.',
             'images.*.mimes' => 'Format gambar yang didukung: JPG, PNG, GIF, dan WebP.',
-            'images.*.max' => 'Salah satu gambar melebihi batas ukuran file yang didukung server.',
+            'images.*.max' => 'Ukuran setiap file maksimal 500 MB.',
         ]);
-        $validator->after(function ($validator) use ($files, $limits): void {
+        $validator->after(function ($validator) use ($files): void {
             $totalBytes = array_sum(array_map(fn ($file) => $file->getSize(), $files));
 
-            if ($totalBytes > $limits['maxTotalBytes']) {
+            if ($totalBytes > self::MAX_UPLOAD_BYTES) {
                 $validator->errors()->add(
                     'images',
-                    'Total ukuran gambar melebihi batas unggah server. Kurangi jumlah gambar atau unggah dalam beberapa kali.'
+                    'Total ukuran semua gambar maksimal 500 MB per unggahan.'
                 );
             }
         });
@@ -71,40 +74,6 @@ class ArchivedImageController extends Controller
             : "{$count} gambar berhasil disimpan.";
 
         return redirect()->route('dashboard')->with('status', $message);
-    }
-
-    private function uploadLimits(): array
-    {
-        $maxFileBytes = min(self::MAX_UPLOAD_BYTES, $this->iniSizeInBytes(ini_get('upload_max_filesize')) ?: self::MAX_UPLOAD_BYTES);
-        $maxTotalBytes = self::MAX_UPLOAD_BYTES;
-        $postMaxBytes = $this->iniSizeInBytes(ini_get('post_max_size'));
-
-        if ($postMaxBytes > 0) {
-            $maxTotalBytes = min($maxTotalBytes, max(1, $postMaxBytes - 20 * 1024 * 1024));
-        }
-
-        return [
-            'maxFileBytes' => $maxFileBytes,
-            'maxTotalBytes' => $maxTotalBytes,
-        ];
-    }
-
-    private function iniSizeInBytes(string|false $value): int
-    {
-        if (! $value || trim($value) === '') {
-            return 0;
-        }
-
-        $value = trim($value);
-        $unit = strtolower(substr($value, -1));
-        $size = (int) $value;
-
-        return match ($unit) {
-            'g' => $size * 1024 * 1024 * 1024,
-            'm' => $size * 1024 * 1024,
-            'k' => $size * 1024,
-            default => $size,
-        };
     }
 
     public function file(Request $request, ArchivedImage $archivedImage): StreamedResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse

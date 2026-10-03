@@ -116,7 +116,8 @@ class DataCenterTest extends TestCase
             ->assertOk()
             ->assertSee('data-max-file-bytes="524288000"', false)
             ->assertSee('data-max-total-bytes="524288000"', false)
-            ->assertSee('maksimal 500 MB per file dan 500 MB total');
+            ->assertSee('500 MB per file, dan 500 MB total per unggahan')
+            ->assertDontSee('Batas efektif di server saat ini');
     }
 
     public function test_image_upload_rejects_invalid_files_and_too_many_files(): void

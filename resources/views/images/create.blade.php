@@ -36,7 +36,7 @@
                                 class="block w-full cursor-pointer rounded-xl border border-slate-300 bg-white text-sm text-slate-700 file:mr-4 file:border-0 file:bg-emerald-50 file:px-4 file:py-3 file:text-sm file:font-semibold file:text-emerald-900 hover:file:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-700">
                             <p class="mt-2 text-sm leading-6 text-slate-600">Pilih folder; browser akan mengunggah gambar yang ada di dalamnya.</p>
                         </div>
-                        <p class="text-sm leading-6 text-slate-600 sm:col-span-2">Maksimal 20 gambar per unggahan, maksimal 500 MB per file dan 500 MB total. Batas efektif di server saat ini: {{ number_format($maxFileBytes / 1048576, 1, ',', '.') }} MB per file dan {{ number_format($maxTotalBytes / 1048576, 1, ',', '.') }} MB total. Jika ukuran folder lebih besar, unggah dalam beberapa kali.</p>
+                        <p class="text-sm leading-6 text-slate-600 sm:col-span-2">Maksimal 20 gambar per unggahan, 500 MB per file, dan 500 MB total per unggahan. Jika folder lebih besar dari 500 MB, pilih file yang ingin diunggah pada kesempatan berikutnya.</p>
                     </div>
                     @error('images')<p class="mt-1 text-sm text-rose-700">{{ $message }}</p>@enderror
                     <p id="upload-limit-message" class="hidden rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950" role="status" aria-live="polite"></p>
